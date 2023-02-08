@@ -2,3 +2,7 @@ body {
     background: #04A1BF;
     text-align: center;
 }
+
+#helptext1 {
+    color: green;
+}
