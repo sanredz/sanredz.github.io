@@ -11,7 +11,7 @@
 	<script src="index.js"></script>
     <div class="container">
         <div class ="row">
-            <h1>To Do List!</h1>
+            <h1 id="title">To Do List!</h1>
         </div>
         <div class ="row">
             <p id="helptext1">
@@ -19,8 +19,21 @@
             </p>
         </div>
         <div class ="row">
-            <input type="text" id="task" name="Task" placeholder="Buy Milk!" maxlength="256"><input type ="submit" value="Submit">
+            <input type="text" id="taskBox" name="Task" placeholder="Buy Milk!" maxlength="256" onclick="addTask()"><input type ="submit" id="submit" value="Submit">
+        </div>
+        <div class="tasks">
+
         </div>
     </div>
+
+    <script>
+        function addTask(){
+            const taskDiv = document.createElement("div");
+            const task = document.createElement("p");
+            task.innerHTML = document.getElementById("taskBox").value;
+            taskDiv.appendChild(task);
+            document.getElementById("tasks").appendChild(taskDiv);
+        }
+    </script>
   </body>
 </html>
