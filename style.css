@@ -7,3 +7,16 @@ body {
     color: white;
     font-weight: bold;
 }
+
+#id {
+    border: 0px;
+    border-radius: 10px;
+    background: white;
+    padding: 15px;
+}
+
+#submit {
+    border: 0px;
+    border-radius:10px;
+    background: grey;
+}
