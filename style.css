@@ -4,5 +4,6 @@ body {
 }
 
 #helptext1 {
-    color: green;
+    color: white;
+    font-weight: bold;
 }
