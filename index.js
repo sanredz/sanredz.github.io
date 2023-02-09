@@ -1,42 +1,41 @@
+const input = document.getElementById("taskBox");
+
 function addTask(){
-    if(document.getElementById("taskBox").value != ""){
-    const input = document.getElementById("taskBox").value;
-    const li = document.createElement("li");
-    li.id = "myTaskLi";
-    const task = document.createElement("p");
-    task.id = "myTaskP";
-    const dButton = document.createElement("button");
-    dButton.appendChild(document.createTextNode("X"));
-    dButton.id = "myTaskDelete";
-    li.appendChild(document.createTextNode(input));
-    li.appendChild(dButton);
-    
-    document.getElementById("tasks").appendChild(li);
+    if(input.value != ""){
+        const taskList = document.getElementById("tasks");
+        const li = document.createElement("li");
+        const task = document.createElement("p");
+        const dButton = document.createElement("button");
 
-    document.getElementById("taskBox").value = "";
-    dButton.addEventListener("click", deleteTask)
-    
+        li.id = "myTaskLi";
+        task.id = "myTaskP";
 
-    function deleteTask(){
-        li.classList.add("delete");
-    }
+        dButton.appendChild(document.createTextNode("X"));
+        li.appendChild(document.createTextNode(input.value));
+        li.appendChild(dButton);
+        
+        taskList.appendChild(li);
 
-    li.addEventListener("click", toggleDone);
+        input.value = "";
+        dButton.addEventListener("click", deleteTask)
+        
 
-    function toggleDone(){
-        li.classList.toggle("done");
-    }
+        function deleteTask(){
+            li.classList.add("delete");
+        }
+
+        li.addEventListener("click", toggleDone);
+
+        function toggleDone(){
+            li.classList.toggle("done");
+        }
 }
 }
-const input2 = document.getElementById("taskBox");
-input2.addEventListener("keydown", addListAfterPress);
 
-
+input.addEventListener("keydown", addListAfterPress);
 
 function addListAfterPress(event){
     if(event.keyCode === 13){
         addTask();
     }
-
-
 }
