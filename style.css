@@ -85,6 +85,22 @@ li > button {
 	font-weight: 800;
 }
 
+#icon {
+    float: right;
+    padding-right: 10px;
+}
+
+label {
+    font-family: 'Open Sans', sans-serif;
+    color: #ffffff;
+	text-transform: uppercase;
+	font-weight: 800;
+    padding-right: 15px;
+}
+
+#social {
+    background-color: rgb(236, 4, 120);
+}
 
 .submit {
     border: 0px;
