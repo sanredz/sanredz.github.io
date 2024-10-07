@@ -58,6 +58,10 @@
             display: none;
         }
 
+        .points-counter {
+            margin-top: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -66,12 +70,16 @@
     
     <div class="container">
         <h2>Today's Question:</h2>
-        <p id="question"></p>
+        <p id="question">Loading question...</p>
 
         <input type="text" id="answerInput" placeholder="Your answer here" />
         <input type="button" id="submitAnswer" value="Submit Answer" onclick="checkAnswer()" />
         
         <p id="feedback"></p>
+
+        <div class="points-counter">
+            Friends Points: <span id="points">0</span>
+        </div>
 
         <div id="nextQuestionMessage" style="display: none;">
             <p>Next question tomorrow.</p>
@@ -98,16 +106,34 @@
     <script>
         let correctAnswer = '';
         let isAnswered = false;
+        let points = 0;
 
-        // Load the saved question from localStorage
+        // Load the saved question and points from localStorage
         document.addEventListener('DOMContentLoaded', function () {
-            const savedQuestion = localStorage.getItem('currentQuestion');
-            const savedAnswerStatus = localStorage.getItem('isAnswered');
-            if (savedQuestion) {
-                document.getElementById('question').innerText = savedQuestion;
-            }
-            if (savedAnswerStatus === 'true') {
-                disableAnswerInput();
+            try {
+                const savedQuestion = localStorage.getItem('currentQuestion');
+                const savedCorrectAnswer = localStorage.getItem('correctAnswer');
+                const savedAnswerStatus = localStorage.getItem('isAnswered');
+                const savedPoints = localStorage.getItem('points');
+
+                if (savedQuestion) {
+                    document.getElementById('question').innerText = savedQuestion;
+                    correctAnswer = savedCorrectAnswer || ''; // Ensure correctAnswer is loaded too
+                } else {
+                    document.getElementById('question').innerText = "No question set.";
+                }
+
+                if (savedAnswerStatus === 'true') {
+                    disableAnswerInput();
+                }
+
+                if (savedPoints) {
+                    points = parseInt(savedPoints);
+                    document.getElementById('points').innerText = points;
+                }
+            } catch (error) {
+                console.error("Error accessing localStorage: ", error);
+                alert("There was a problem loading the question. Please refresh or try another browser.");
             }
         });
 
@@ -117,12 +143,19 @@
             const userAnswer = document.getElementById('answerInput').value.trim();
             if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
                 document.getElementById('feedback').innerText = 'Nice job!';
+                incrementPoints();
                 disableAnswerInput();
                 isAnswered = true;
                 localStorage.setItem('isAnswered', 'true');
             } else {
                 document.getElementById('feedback').innerText = 'Try again!';
             }
+        }
+
+        function incrementPoints() {
+            points++;
+            document.getElementById('points').innerText = points;
+            localStorage.setItem('points', points);
         }
 
         function disableAnswerInput() {
