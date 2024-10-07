@@ -1,59 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <script src="https://kit.fontawesome.com/2dd0e45ea1.js" crossorigin="anonymous"></script>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>To-Do List</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
+    <title>Sana + Friends Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
 
+        h1 {
+            color: #4CAF50;
+        }
+
+        .container {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        input[type="button"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+
+        .blocked {
+            background-color: lightgray;
+            pointer-events: none;
+        }
+
+        .admin-login {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .points-counter {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sana + Friends</h1>
+    
     <div class="container">
-        <div class ="row">
-            <div class ="title col-12">
-                <h1>To Do List!</h1>
-            </div>
-        </div>
-        <div class ="row">
-            <div class ="introtext col-8 offset-2">
-                <p id="helptext1">
-                    Add your task into the text field and press the button to add a task to your list!
-                </p>
-            </div>
-        </div>
-        <div class ="row">
-            <div class ="col-8 offset-2">
-                <p id="disclaimer">
-                    (...this is just me refreshing my memory of HTML/CSS/JS...)
-                </p>
-            </div>
-        </div>
-        <div class ="row">
-            <div class ="inputArea">
-                <input type="text" class="col-8 col-md-6 col-lg-4" id="taskBox" name="Task" size="50" placeholder="Buy Milk!" maxlength="50"> <button onclick="addTask()" class="submit" type="button" id="submitbutton" value="Submit" title="Add Task" >Submit</button>
-            </div>
-        </div>
-        <div class ="row">
-            <div class="checkBoxes">
-                <input type="checkbox" id="social" name="social">
-                <label for="social">Social</label>
-                <input type="checkbox" id="work" name="work">
-                <label for="work">Work</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="listItems col-12 offset-0 col-sm-8 offset-sm-2">
-                <ul id="tasks">
-            
-                </ul>
-            </div>
+        <h2>Today's Question:</h2>
+        <p id="question"></p>
+
+        <input type="text" id="answerInput" placeholder="Your answer here" />
+        <input type="button" id="submitAnswer" value="Submit Answer" onclick="checkAnswer()" />
+        
+        <p id="feedback"></p>
+
+        <div class="points-counter">
+            Friends Points: <span id="points">0</span>
         </div>
 
+        <div id="nextQuestionMessage" style="display: none;">
+            <p>Next question tomorrow.</p>
+        </div>
     </div>
-    <script src="index.js"></script>
-  </body>
+
+    <div>
+        <button onclick="showAdminLogin()">Admin Login</button>
+    </div>
+
+    <div class="admin-login">
+        <input type="password" id="adminPassword" placeholder="Admin Password">
+        <input type="button" value="Login" onclick="adminLogin()">
+    </div>
+
+    <div id="adminPanel" style="display: none;">
+        <h3>Admin Panel</h3>
+        <p>Set a new question:</p>
+        <input type="text" id="newQuestion" placeholder="New Question" />
+        <input type="text" id="correctAnswer" placeholder="Correct Answer" />
+        <input type="button" value="Set Question" onclick="setNewQuestion()" />
+    </div>
+
+    <script>
+        let correctAnswer = '';
+        let points = 0;
+        let isAnswered = false;
+
+        // Load the saved question and points from localStorage
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedQuestion = localStorage.getItem('currentQuestion');
+            const savedPoints = localStorage.getItem('points');
+            const savedAnswerStatus = localStorage.getItem('isAnswered');
+            if (savedQuestion) {
+                document.getElementById('question').innerText = savedQuestion;
+            }
+            if (savedPoints) {
+                points = parseInt(savedPoints);
+                document.getElementById('points').innerText = points;
+            }
+            if (savedAnswerStatus === 'true') {
+                disableAnswerInput();
+            }
+        });
+
+        function checkAnswer() {
+            if (isAnswered) return;
+
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                document.getElementById('feedback').innerText = 'Nice job!';
+                incrementPoints();
+                disableAnswerInput();
+                isAnswered = true;
+                localStorage.setItem('isAnswered', 'true');
+            } else {
+                document.getElementById('feedback').innerText = 'Try again!';
+            }
+        }
+
+        function incrementPoints() {
+            points++;
+            document.getElementById('points').innerText = points;
+            localStorage.setItem('points', points);
+        }
+
+        function disableAnswerInput() {
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').classList.add('blocked');
+            document.getElementById('answerInput').setAttribute('placeholder', 'Next question tomorrow.');
+            document.getElementById('submitAnswer').style.display = 'none';
+            document.getElementById('nextQuestionMessage').style.display = 'block';
+        }
+
+        function enableAnswerInput() {
+            document.getElementById('answerInput').classList.remove('blocked');
+            document.getElementById('answerInput').setAttribute('placeholder', 'Your answer here');
+            document.getElementById('submitAnswer').style.display = 'inline-block';
+            document.getElementById('nextQuestionMessage').style.display = 'none';
+        }
+
+        function showAdminLogin() {
+            document.querySelector('.admin-login').style.display = 'block';
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'PertenQuiz') {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.querySelector('.admin-login').style.display = 'none';
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        function setNewQuestion() {
+            const newQuestion = document.getElementById('newQuestion').value;
+            correctAnswer = document.getElementById('correctAnswer').value.trim();
+
+            if (newQuestion && correctAnswer) {
+                document.getElementById('question').innerText = newQuestion;
+                localStorage.setItem('currentQuestion', newQuestion);
+                localStorage.setItem('correctAnswer', correctAnswer);
+                isAnswered = false;
+                enableAnswerInput();
+                localStorage.setItem('isAnswered', 'false');
+                document.getElementById('feedback').innerText = '';
+                document.getElementById('adminPanel').style.display = 'none';
+            } else {
+                alert('Please fill in both the question and answer.');
+            }
+        }
+    </script>
+</body>
 </html>
