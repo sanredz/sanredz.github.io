@@ -58,10 +58,6 @@
             display: none;
         }
 
-        .points-counter {
-            margin-top: 10px;
-            font-size: 18px;
-        }
     </style>
 </head>
 <body>
@@ -76,10 +72,6 @@
         <input type="button" id="submitAnswer" value="Submit Answer" onclick="checkAnswer()" />
         
         <p id="feedback"></p>
-
-        <div class="points-counter">
-            Friends Points: <span id="points">0</span>
-        </div>
 
         <div id="nextQuestionMessage" style="display: none;">
             <p>Next question tomorrow.</p>
@@ -105,20 +97,14 @@
 
     <script>
         let correctAnswer = '';
-        let points = 0;
         let isAnswered = false;
 
-        // Load the saved question and points from localStorage
+        // Load the saved question from localStorage
         document.addEventListener('DOMContentLoaded', function () {
             const savedQuestion = localStorage.getItem('currentQuestion');
-            const savedPoints = localStorage.getItem('points');
             const savedAnswerStatus = localStorage.getItem('isAnswered');
             if (savedQuestion) {
                 document.getElementById('question').innerText = savedQuestion;
-            }
-            if (savedPoints) {
-                points = parseInt(savedPoints);
-                document.getElementById('points').innerText = points;
             }
             if (savedAnswerStatus === 'true') {
                 disableAnswerInput();
@@ -131,19 +117,12 @@
             const userAnswer = document.getElementById('answerInput').value.trim();
             if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
                 document.getElementById('feedback').innerText = 'Nice job!';
-                incrementPoints();
                 disableAnswerInput();
                 isAnswered = true;
                 localStorage.setItem('isAnswered', 'true');
             } else {
                 document.getElementById('feedback').innerText = 'Try again!';
             }
-        }
-
-        function incrementPoints() {
-            points++;
-            document.getElementById('points').innerText = points;
-            localStorage.setItem('points', points);
         }
 
         function disableAnswerInput() {
