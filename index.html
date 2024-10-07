@@ -53,11 +53,6 @@
             pointer-events: none;
         }
 
-        .admin-login {
-            margin-top: 20px;
-            display: none;
-        }
-
         .points-counter {
             margin-top: 10px;
             font-size: 18px;
@@ -70,7 +65,7 @@
     
     <div class="container">
         <h2>Today's Question:</h2>
-        <p id="question">Loading question...</p>
+        <p id="question">What is the capital of France?</p> <!-- Update the question here -->
 
         <input type="text" id="answerInput" placeholder="Your answer here" />
         <input type="button" id="submitAnswer" value="Submit Answer" onclick="checkAnswer()" />
@@ -86,67 +81,25 @@
         </div>
     </div>
 
-    <div>
-        <button onclick="showAdminLogin()">Admin Login</button>
-    </div>
-
-    <div class="admin-login">
-        <input type="password" id="adminPassword" placeholder="Admin Password">
-        <input type="button" value="Login" onclick="adminLogin()">
-    </div>
-
-    <div id="adminPanel" style="display: none;">
-        <h3>Admin Panel</h3>
-        <p>Set a new question:</p>
-        <input type="text" id="newQuestion" placeholder="New Question" />
-        <input type="text" id="correctAnswer" placeholder="Correct Answer" />
-        <input type="button" value="Set Question" onclick="setNewQuestion()" />
-    </div>
-
     <script>
-        let correctAnswer = '';
-        let isAnswered = false;
+        let correctAnswer = 'Paris'; // Set the correct answer here
         let points = 0;
 
-        // Load the saved question and points from localStorage
+        // Load points from localStorage (persistent between sessions)
         document.addEventListener('DOMContentLoaded', function () {
-            try {
-                const savedQuestion = localStorage.getItem('currentQuestion');
-                const savedCorrectAnswer = localStorage.getItem('correctAnswer');
-                const savedAnswerStatus = localStorage.getItem('isAnswered');
-                const savedPoints = localStorage.getItem('points');
-
-                if (savedQuestion) {
-                    document.getElementById('question').innerText = savedQuestion;
-                    correctAnswer = savedCorrectAnswer || ''; // Ensure correctAnswer is loaded too
-                } else {
-                    document.getElementById('question').innerText = "No question set.";
-                }
-
-                if (savedAnswerStatus === 'true') {
-                    disableAnswerInput();
-                }
-
-                if (savedPoints) {
-                    points = parseInt(savedPoints);
-                    document.getElementById('points').innerText = points;
-                }
-            } catch (error) {
-                console.error("Error accessing localStorage: ", error);
-                alert("There was a problem loading the question. Please refresh or try another browser.");
+            const savedPoints = localStorage.getItem('points');
+            if (savedPoints) {
+                points = parseInt(savedPoints);
+                document.getElementById('points').innerText = points;
             }
         });
 
         function checkAnswer() {
-            if (isAnswered) return;
-
             const userAnswer = document.getElementById('answerInput').value.trim();
             if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
                 document.getElementById('feedback').innerText = 'Nice job!';
                 incrementPoints();
                 disableAnswerInput();
-                isAnswered = true;
-                localStorage.setItem('isAnswered', 'true');
             } else {
                 document.getElementById('feedback').innerText = 'Try again!';
             }
@@ -155,7 +108,7 @@
         function incrementPoints() {
             points++;
             document.getElementById('points').innerText = points;
-            localStorage.setItem('points', points);
+            localStorage.setItem('points', points); // Save points to localStorage
         }
 
         function disableAnswerInput() {
@@ -164,45 +117,6 @@
             document.getElementById('answerInput').setAttribute('placeholder', 'Next question tomorrow.');
             document.getElementById('submitAnswer').style.display = 'none';
             document.getElementById('nextQuestionMessage').style.display = 'block';
-        }
-
-        function enableAnswerInput() {
-            document.getElementById('answerInput').classList.remove('blocked');
-            document.getElementById('answerInput').setAttribute('placeholder', 'Your answer here');
-            document.getElementById('submitAnswer').style.display = 'inline-block';
-            document.getElementById('nextQuestionMessage').style.display = 'none';
-        }
-
-        function showAdminLogin() {
-            document.querySelector('.admin-login').style.display = 'block';
-        }
-
-        function adminLogin() {
-            const password = document.getElementById('adminPassword').value;
-            if (password === 'PertenQuiz') {
-                document.getElementById('adminPanel').style.display = 'block';
-                document.querySelector('.admin-login').style.display = 'none';
-            } else {
-                alert('Incorrect password');
-            }
-        }
-
-        function setNewQuestion() {
-            const newQuestion = document.getElementById('newQuestion').value;
-            correctAnswer = document.getElementById('correctAnswer').value.trim();
-
-            if (newQuestion && correctAnswer) {
-                document.getElementById('question').innerText = newQuestion;
-                localStorage.setItem('currentQuestion', newQuestion);
-                localStorage.setItem('correctAnswer', correctAnswer);
-                isAnswered = false;
-                enableAnswerInput();
-                localStorage.setItem('isAnswered', 'false');
-                document.getElementById('feedback').innerText = '';
-                document.getElementById('adminPanel').style.display = 'none';
-            } else {
-                alert('Please fill in both the question and answer.');
-            }
         }
     </script>
 </body>
