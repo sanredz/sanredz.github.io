@@ -1,123 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sana + Friends Quiz</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #4CAF50;
-        }
-
-        .container {
-            margin-top: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            width: 80%;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-
-        input[type="button"] {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        input[type="button"]:hover {
-            background-color: #45a049;
-        }
-
-        .blocked {
-            background-color: lightgray;
-            pointer-events: none;
-        }
-
-        .points-counter {
-            margin-top: 10px;
-            font-size: 18px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroShrooms - The Ultimate Casual Card Game</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico">
 </head>
 <body>
-
-    <h1>Sana + Friends</h1>
-    
+  <!-- Header Section -->
+  <header class="header">
     <div class="container">
-        <h2>Today's Question:</h2>
-        <p id="question">What is Chandler's Middle Name?</p> <!-- Update the question here -->
-
-        <input type="text" id="answerInput" placeholder="Your answer here" />
-        <input type="button" id="submitAnswer" value="Submit Answer" onclick="checkAnswer()" />
-        
-        <p id="feedback"></p>
-
-        <div class="points-counter">
-            Friends Points: <span id="points">0</span>
-        </div>
-
-        <div id="nextQuestionMessage" style="display: none;">
-            <p>Next question tomorrow.</p>
-        </div>
+      <h1>AstroShrooms</h1>
+      <p class="tagline">Dive into the universe of colorful Shrooms and thrilling card strategy!</p>
+      <a href="#about" class="button">Explore the Game</a>
     </div>
+  </header>
 
-    <script>
-        let correctAnswer = 'Muriel'; // Set the correct answer here
-        let points = 0;
+  <!-- Game Information Section -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2>About AstroShrooms</h2>
+      <p>AstroShrooms is a unique, fast-paced card game blending strategy and surprises. Perfect for casual gamers and competitive players alike, the game brings friends and family together in a colorful journey.</p>
+      <!-- Placeholder for Game Banner -->
+      <img src="banner-placeholder.jpg" alt="AstroShrooms Game Banner" class="banner">
+    </div>
+  </section>
 
-        // Load points from localStorage (persistent between sessions)
-        document.addEventListener('DOMContentLoaded', function () {
-            const savedPoints = localStorage.getItem('points');
-            if (savedPoints) {
-                points = parseInt(savedPoints);
-                document.getElementById('points').innerText = points;
-            }
-        });
+  <!-- Instagram Feed Section -->
+  <section id="instagram" class="section">
+    <div class="container">
+      <h2>Follow the Journey</h2>
+      <p>Stay updated on AstroShrooms’ development and get behind-the-scenes looks by following us on Instagram.</p>
+      <a href="https://www.instagram.com/YOUR_INSTAGRAM_HANDLE" target="_blank" class="button">Follow on Instagram</a>
+      
+      <!-- Instagram Embed: SnapWidget for Instagram -->
+      <div class="instagram-feed">
+        <!-- Replace this link with your SnapWidget embed code -->
+        <iframe src="https://snapwidget.com/embed/YOUR_SNAPWIDGET_EMBED_CODE" class="snapwidget-widget" allowtransparency="true" frameborder="0" scrolling="no"></iframe>
+      </div>
+    </div>
+  </section>
 
-        function checkAnswer() {
-            const userAnswer = document.getElementById('answerInput').value.trim();
-            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                document.getElementById('feedback').innerText = 'Nice job!';
-                incrementPoints();
-                disableAnswerInput();
-            } else {
-                document.getElementById('feedback').innerText = 'Try again!';
-            }
-        }
+  <!-- About the Author Section -->
+  <section id="author" class="section">
+    <div class="container">
+      <h2>About the Creator</h2>
+      <p>I’m Sanjin Redzepagic, the creator of AstroShrooms. Driven by a passion for unique, immersive games, I’ve developed AstroShrooms to bring fun, laughter, and lighthearted strategy to every gathering. Follow along for the journey!</p>
+    </div>
+  </section>
 
-        function incrementPoints() {
-            points++;
-            document.getElementById('points').innerText = points;
-            localStorage.setItem('points', points); // Save points to localStorage
-        }
-
-        function disableAnswerInput() {
-            document.getElementById('answerInput').value = '';
-            document.getElementById('answerInput').classList.add('blocked');
-            document.getElementById('answerInput').setAttribute('placeholder', 'Next question tomorrow.');
-            document.getElementById('submitAnswer').style.display = 'none';
-            document.getElementById('nextQuestionMessage').style.display = 'block';
-        }
-    </script>
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2024 AstroShrooms. All rights reserved.</p>
+      <p><a href="https://www.instagram.com/YOUR_INSTAGRAM_HANDLE" target="_blank">Instagram</a> | <a href="https://github.com/YOUR_GITHUB_PROFILE/AstroShrooms">GitHub</a></p>
+    </div>
+  </footer>
 </body>
 </html>
