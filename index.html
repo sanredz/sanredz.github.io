@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Compound Interest Calculator (+ Withdrawals)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #232323;
+      color: #f2f2f2;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 440px;
+      margin: 40px auto;
+      background: #292d36;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 18px #000a  ;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      color: #71ee9c;
+      margin-bottom: 2rem;
+      letter-spacing: 1px;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 1rem;
+      color: #cfd6e1;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 1.1rem;
+      background: #22262d;
+      color: #e8e8e8;
+      font-size: 1rem;
+    }
+    input[type="number"]:focus {
+      outline: 2px solid #71ee9c;
+    }
+    button {
+      width: 100%;
+      background: #71ee9c;
+      color: #141414;
+      font-weight: bold;
+      padding: 0.8rem 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.07rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-bottom: 1.4rem;
+      margin-top: 0.6rem;
+      transition: background .2s;
+    }
+    button:hover {
+      background: #54ba7e;
+    }
+    .results {
+      background: #21262b;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      font-size: 1.06rem;
+    }
+    .results span {
+      color: #71ee9c;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
+      background: #22272c;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.98rem;
+    }
+    th, td {
+      padding: 0.6rem 0.3rem;
+      text-align: right;
+      border-bottom: 1px solid #333842;
+    }
+    th {
+      background: #27313b;
+      color: #9ee5c0;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    @media (max-width: 600px) {
+      .container {
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+        box-shadow: none;
+      }
+      table, th, td {
+        font-size: 0.93rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Compound Interest Calculator</h1>
+    <form id="calcForm">
+      <label for="principal">Initial Investment ($):</label>
+      <input type="number" id="principal" min="0" step="any" value="5000" required>
 
+      <label for="rate">Annual Interest Rate (%):</label>
+      <input type="number" id="rate" min="0" max="100" step="any" value="5" required>
+
+      <label for="years">Years:</label>
+      <input type="number" id="years" min="1" max="50" step="1" value="5" required>
+
+      <label for="withdrawal">Monthly Withdrawal ($):</label>
+      <input type="number" id="withdrawal" min="0" step="any" value="0">
+
+      <button type="submit">Calculate</button>
+    </form>
+
+    <div class="results" id="results" style="display:none;"></div>
+    <div id="breakdown"></div>
+  </div>
+
+  <script>
+    function toMoney(x) {
+      return "$" + Number(x).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    document.getElementById('calcForm').onsubmit = function(e) {
+      e.preventDefault();
+      const principal = parseFloat(document.getElementById('principal').value);
+      const rate = parseFloat(document.getElementById('rate').value) / 100;
+      const years = parseInt(document.getElementById('years').value);
+      const withdrawal = parseFloat(document.getElementById('withdrawal').value) || 0;
+
+      let balance = principal;
+      let totalInterest = 0;
+      let breakdown = [];
+      let monthlyRate = rate / 12;
+      let months = years * 12;
+
+      for (let year = 0; year <= years; year++) {
+        breakdown.push({year, interest: 0, accrued: totalInterest, balance});
+      }
+
+      for (let m = 1; m <= months; m++) {
+        let interest = balance * monthlyRate;
+        totalInterest += interest;
+        balance += interest;
+
+        // Monthly withdrawal at the *end* of the month
+        balance -= withdrawal;
+        if (balance < 0) {
+          balance = 0;
+        }
+
+        // At the end of each year, push yearly snapshot
+        if (m % 12 === 0 || m === months) {
+          breakdown[Math.floor(m/12)].interest = (totalInterest - breakdown[Math.floor(m/12)-1]?.accrued || totalInterest).toFixed(2);
+          breakdown[Math.floor(m/12)].accrued = totalInterest.toFixed(2);
+          breakdown[Math.floor(m/12)].balance = balance < 0.01 ? 0 : balance.toFixed(2);
+        }
+      }
+
+      let yearsActuallyLasted = months;
+      if (balance === 0 && withdrawal > 0) {
+        // Find last nonzero year
+        for (let y = 1; y <= years; y++) {
+          if (breakdown[y].balance == 0) {
+            yearsActuallyLasted = y - 1 + ((12 - (months % 12))/12);
+            break;
+          }
+        }
+      }
+
+      // Results summary
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').innerHTML =
+        `<div>
+          <b>Future Value:</b> <span>${toMoney(breakdown[years].balance)}</span><br>
+          <b>Total Interest Earned:</b> <span>${toMoney(totalInterest)}</span><br>
+          <b>Years Lasted:</b> <span>${balance === 0 && withdrawal > 0 ? (yearsActuallyLasted).toFixed(2) : years}</span>
+        </div>`;
+
+      // Table breakdown
+      let table = `
+        <table>
+          <tr>
+            <th>Year</th>
+            <th>Interest</th
