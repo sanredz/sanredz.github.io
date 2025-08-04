@@ -6,25 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #232323;
+      background: #181c1f;
       color: #f2f2f2;
       font-family: 'Segoe UI', Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
     .container {
-      max-width: 440px;
-      margin: 40px auto;
-      background: #292d36;
+      max-width: 500px;
+      margin: 30px auto;
+      background: #222836;
       padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 4px 18px #000a  ;
+      border-radius: 22px;
+      box-shadow: 0 8px 36px #000a;
     }
     h1 {
       text-align: center;
-      font-size: 1.6rem;
-      color: #71ee9c;
+      font-size: 2rem;
+      color: #6fffab;
       margin-bottom: 2rem;
+      font-weight: 700;
       letter-spacing: 1px;
     }
     label {
@@ -32,76 +33,80 @@
       margin-bottom: 0.25rem;
       font-size: 1rem;
       color: #cfd6e1;
+      font-weight: 500;
     }
     input[type="number"] {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.7rem;
       border: none;
-      border-radius: 6px;
-      margin-bottom: 1.1rem;
-      background: #22262d;
+      border-radius: 8px;
+      margin-bottom: 1.2rem;
+      background: #181c27;
       color: #e8e8e8;
-      font-size: 1rem;
+      font-size: 1.08rem;
     }
     input[type="number"]:focus {
-      outline: 2px solid #71ee9c;
+      outline: 2px solid #6fffab;
     }
     button {
       width: 100%;
-      background: #71ee9c;
-      color: #141414;
-      font-weight: bold;
-      padding: 0.8rem 0;
+      background: #6fffab;
+      color: #161616;
+      font-weight: 700;
+      padding: 0.9rem 0;
       border: none;
-      border-radius: 8px;
-      font-size: 1.07rem;
+      border-radius: 12px;
+      font-size: 1.2rem;
       letter-spacing: 1px;
       cursor: pointer;
       margin-bottom: 1.4rem;
-      margin-top: 0.6rem;
+      margin-top: 0.5rem;
       transition: background .2s;
     }
     button:hover {
-      background: #54ba7e;
+      background: #38d882;
     }
     .results {
-      background: #21262b;
+      background: #191f27;
       border-radius: 10px;
-      padding: 1rem;
-      margin-top: 1.5rem;
-      font-size: 1.06rem;
+      padding: 1.1rem;
+      margin-top: 1.6rem;
+      font-size: 1.08rem;
+      margin-bottom: 1.3rem;
     }
     .results span {
-      color: #71ee9c;
+      color: #6fffab;
       font-weight: bold;
     }
     table {
       width: 100%;
       margin-top: 1rem;
       border-collapse: collapse;
-      background: #22272c;
+      background: #23293a;
       border-radius: 8px;
       overflow: hidden;
-      font-size: 0.98rem;
+      font-size: 1rem;
     }
     th, td {
-      padding: 0.6rem 0.3rem;
+      padding: 0.7rem 0.3rem;
       text-align: right;
       border-bottom: 1px solid #333842;
     }
     th {
-      background: #27313b;
-      color: #9ee5c0;
+      background: #253047;
+      color: #6fffab;
+      font-size: 1.01rem;
     }
     tr:last-child td {
       border-bottom: none;
     }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .container {
         margin: 0;
         border-radius: 0;
         min-height: 100vh;
         box-shadow: none;
+        padding: 1rem;
       }
       table, th, td {
         font-size: 0.93rem;
@@ -198,4 +203,28 @@
         <table>
           <tr>
             <th>Year</th>
-            <th>Interest</th
+            <th>Interest</th>
+            <th>Accrued Interest</th>
+            <th>Balance</th>
+          </tr>
+      `;
+      for (let y = 0; y <= years; y++) {
+        table += `<tr>
+          <td>${y}</td>
+          <td>${y === 0 ? '-' : toMoney(breakdown[y].interest)}</td>
+          <td>${y === 0 ? '-' : toMoney(breakdown[y].accrued)}</td>
+          <td>${toMoney(breakdown[y].balance)}</td>
+        </tr>`;
+        if (breakdown[y].balance == 0 && y !== 0) break;
+      }
+      table += "</table>";
+      document.getElementById('breakdown').innerHTML = table;
+    };
+
+    // Trigger calculation on page load (default values)
+    window.onload = () => {
+      document.getElementById('calcForm').dispatchEvent(new Event('submit'));
+    };
+  </script>
+</body>
+</html>
