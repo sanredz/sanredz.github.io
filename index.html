@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Compound Interest Calculator (+ Withdrawals)</title>
+  <title>Compound Interest Calculator (APY, Withdrawals)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -34,6 +34,13 @@
       font-size: 1rem;
       color: #cfd6e1;
       font-weight: 500;
+    }
+    .subtle {
+      font-size: 0.98rem;
+      color: #83bca4;
+      margin-bottom: 0.5rem;
+      margin-top: -0.3rem;
+      font-style: italic;
     }
     input[type="number"] {
       width: 100%;
@@ -121,7 +128,8 @@
       <label for="principal">Initial Investment ($):</label>
       <input type="number" id="principal" min="0" step="any" value="5000" required>
 
-      <label for="rate">Annual Interest Rate (%):</label>
+      <label for="rate">Annual Interest Rate (APY, %):</label>
+      <div class="subtle">APY = the effective annual rate, including compounding.</div>
       <input type="number" id="rate" min="0" max="100" step="any" value="5" required>
 
       <label for="years">Years:</label>
@@ -142,18 +150,25 @@
       return "$" + Number(x).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     }
 
+    // Converts APY (effective annual rate) to the equivalent monthly rate for compounding.
+    function apyToMonthlyRate(apy) {
+      // apy as decimal, e.g. 0.05 for 5%
+      return Math.pow(1 + apy, 1/12) - 1;
+    }
+
     document.getElementById('calcForm').onsubmit = function(e) {
       e.preventDefault();
       const principal = parseFloat(document.getElementById('principal').value);
-      const rate = parseFloat(document.getElementById('rate').value) / 100;
+      const apyPercent = parseFloat(document.getElementById('rate').value);
+      const apy = apyPercent / 100;
       const years = parseInt(document.getElementById('years').value);
       const withdrawal = parseFloat(document.getElementById('withdrawal').value) || 0;
 
       let balance = principal;
       let totalInterest = 0;
       let breakdown = [];
-      let monthlyRate = rate / 12;
-      let months = years * 12;
+      const months = years * 12;
+      const monthlyRate = apyToMonthlyRate(apy);
 
       for (let year = 0; year <= years; year++) {
         breakdown.push({year, interest: 0, accrued: totalInterest, balance});
@@ -166,9 +181,7 @@
 
         // Monthly withdrawal at the *end* of the month
         balance -= withdrawal;
-        if (balance < 0) {
-          balance = 0;
-        }
+        if (balance < 0) balance = 0;
 
         // At the end of each year, push yearly snapshot
         if (m % 12 === 0 || m === months) {
@@ -178,9 +191,8 @@
         }
       }
 
-      let yearsActuallyLasted = months;
+      let yearsActuallyLasted = years;
       if (balance === 0 && withdrawal > 0) {
-        // Find last nonzero year
         for (let y = 1; y <= years; y++) {
           if (breakdown[y].balance == 0) {
             yearsActuallyLasted = y - 1 + ((12 - (months % 12))/12);
